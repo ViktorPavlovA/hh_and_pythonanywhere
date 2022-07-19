@@ -40,6 +40,9 @@ class hh_client:
             sleep(randint(1, 2))
 
         def up_our_resume2(browser):
+            __resume_click = browser.find_element(By.CSS_SELECTOR,"a[data-page-analytics-experiment-event ='resume_list_header']")
+            __resume_click.click()
+            sleep(randint(1, 2))
             __button_up = browser.find_element(By.CSS_SELECTOR,"button[class='bloko-button bloko-button_kind-secondary bloko-button_scale-small bloko-button_stretched'][data-qa='resume-update-button']")
             __button_up.click()
             sleep(randint(1, 2))
