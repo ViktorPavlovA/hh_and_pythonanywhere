@@ -9,7 +9,7 @@ from logging.handlers import SysLogHandler
 from datetime import datetime
 
 class Logger:
-    def init(self) -> None:
+    def __init__(self) -> None:
         self.logger = logging.getLogger('Up_myresume')
         self.logger.setLevel(logging.INFO)
         journal_handler = SysLogHandler(address='/dev/log')
@@ -18,7 +18,7 @@ class Logger:
 
 
 class HH_client:
-    def init(self,config:dict)->None:
+    def __init__(self,config:dict)->None:
 
         chrome_options = webdriver.ChromeOptions()
         chrome_options.add_argument("--no-sandbox")
@@ -64,8 +64,7 @@ class HH_client:
               self.logger.logger.info(f"SUCCESS, 2 UP RESUME NUMBER {i}")
             except: self.logger.logger.info(f"ERROR, 2 UP RESUME NUMBER {i}")
 
-
-    def call(self) -> None:
+    def __call__(self) -> None:
         """ Main function"""
         self.logger.logger.info(f"{datetime.now()} Starting up your resume!")
         self.browser.get("https://spb.hh.ru/account/login?backurl=%2F&hhtmFrom=main")
