@@ -1,0 +1,1 @@
+cd /home/vi/Desktop/project/hh_and_pythonanywhere/ && /home/vi/anaconda3/envs/pytorch_env/bin/python /home/vi/Desktop/project/hh_and_pythonanywhere/hh_autorization.py

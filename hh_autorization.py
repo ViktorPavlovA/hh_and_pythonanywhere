@@ -7,6 +7,7 @@ import yaml
 import logging
 from logging.handlers import SysLogHandler
 from datetime import datetime
+from selenium.webdriver.common.action_chains import ActionChains
 
 class Logger:
     def __init__(self) -> None:
@@ -14,7 +15,6 @@ class Logger:
         self.logger.setLevel(logging.INFO)
         journal_handler = SysLogHandler(address='/dev/log')
         self.logger.addHandler(journal_handler)
-
 
 
 class HH_client:
@@ -58,30 +58,34 @@ class HH_client:
         """ Up resume"""
         for i in range(self.resume_numbers):
             try:
-              button_up = self.browser.find_element(By.XPATH,"//button[@data-qa='resume-update-button_actions' and @class='bloko-link']") 
-              button_up.click()
-              sleep(4)
-              self.logger.logger.info(f"SUCCESS, 2 UP RESUME NUMBER {i}")
-            except: self.logger.logger.info(f"ERROR, 2 UP RESUME NUMBER {i}")
+              sleep(randint(1, 2))
+              button = self.browser.find_element(By.XPATH,'//button[text()="Поднять в поиске"]')
+              self.browser.execute_script("arguments[0].click();", button)
+              sleep(randint(1, 2))
+              self.logger.logger.warning(f"SUCCESS, 2 UP RESUME NUMBER {i}")
+            except Exception as e:
+                sleep(randint(1, 2))
+                self.logger.logger.error(f"ERROR, 2 UP RESUME NUMBER {i}, {e}")
 
     def __call__(self) -> None:
         """ Main function"""
-        self.logger.logger.info(f"{datetime.now()} Starting up your resume!")
-        self.browser.get("https://spb.hh.ru/account/login?backurl=%2F&hhtmFrom=main")
-        sleep(randint(1,2))
-        self.click1_with_password()
-        sleep(randint(1,2))
-        self.click2_write_login()
-        sleep(randint(1,2))
-        self.click3_write_password()
-        sleep(randint(1,2))
-        self.click4_enter()
-        sleep(randint(1,2))
-        self.click5_main_page()
-        sleep(randint(1,2))
-        self.click6_up_resume()
-        sleep(randint(1,2))
-        self.browser.close()
+        for try_ in range(2):
+            self.logger.logger.warning(f"{datetime.now()} Starting up your resume!")
+            self.browser.get("https://spb.hh.ru/account/login?backurl=%2F&hhtmFrom=main")
+            sleep(randint(1,2))
+            self.click1_with_password()
+            sleep(randint(1,2))
+            self.click2_write_login()
+            sleep(randint(1,2))
+            self.click3_write_password()
+            sleep(randint(1,2))
+            self.click4_enter()
+            sleep(randint(1,2))
+            self.click5_main_page()
+            sleep(randint(1,2))
+            self.click6_up_resume()
+            sleep(randint(1,2))
+            self.browser.close()
 
 
 if __name__ == '__main__':
