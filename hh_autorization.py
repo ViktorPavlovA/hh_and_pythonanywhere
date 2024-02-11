@@ -1,79 +1,94 @@
-#don't fogget write mail and password in:  if __name__ == '__main__':
 from selenium import webdriver
 from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.common.by import By
 from time import sleep
 from random import randint
+import yaml
+import logging
+from logging.handlers import SysLogHandler
+from datetime import datetime
 
-class hh_client():
-    def login_hh(self,password,login,n):
-        def click_1(browser):
-            """
-                                                     CSS_code for example
+class Logger:
+    def init(self) -> None:
+        self.logger = logging.getLogger('Up_myresume')
+        self.logger.setLevel(logging.INFO)
+        journal_handler = SysLogHandler(address='/dev/log')
+        self.logger.addHandler(journal_handler)
 
-            <button type="button" data-qa="expand-login-by-password" class="bloko-link bloko-link_pseudo">Войти с&nbsp;паролем</button>
 
 
-            """
-            __click_on_it = browser.find_element(By.CSS_SELECTOR,"button[data-qa ='expand-login-by-password'][class='bloko-link bloko-link_pseudo']")
-            __click_on_it.click()
-            sleep(randint(1,2))
-        def click_and_auth(browser,password,login):
-            __login = browser.find_element(By.CSS_SELECTOR,"input[name ='username'][class='bloko-input']")
-            __login.clear()
-            __login.send_keys(login)
-            sleep(randint(1,2))
-            __csspassword = browser.find_element(By.CSS_SELECTOR,"input[data-qa ='login-input-password'][class='bloko-input bloko-input_password']")
-            __csspassword.clear()
-            __csspassword.send_keys(password)
-            sleep(randint(1, 2))
-            __login_button = browser.find_element(By.CSS_SELECTOR,"button[class ='bloko-button bloko-button_kind-primary'][type='submit'][data-qa='account-login-submit']")
-            __login_button.click()
-            sleep(randint(1, 2))
-        def up_our_resume(browser):
-            try:
-                __resume_click = browser.find_element(By.CSS_SELECTOR,
-                                                      "a[data-page-analytics-experiment-event ='resume_list_header']")
-                __resume_click.click()
-            except:
-                __out_click = browser.find_element(By.CSS_SELECTOR,
-                                                   "button[class ='bloko-button bloko-button_stretched bloko-button_appearance-outlined'")
-            sleep(randint(1, 2))
-            __button_up = browser.find_element(By.XPATH, "//button[. = 'Поднять в поиске']")
-            __button_up.click()
-            sleep(randint(1, 2))
+class HH_client:
+    def init(self,config:dict)->None:
+
         chrome_options = webdriver.ChromeOptions()
         chrome_options.add_argument("--no-sandbox")
         chrome_options.add_argument("--headless")
         chrome_options.add_argument("--disable-gpu")
-        browser = webdriver.Chrome(options=chrome_options)
-        browser.get("https://spb.hh.ru/account/login?backurl=%2F&hhtmFrom=main")
-        for _ in range(n):
-            click_1(browser)
-            click_and_auth(browser,password,login)
-            up_our_resume(browser)
-            browser.close()
+        self.password = config['password']
+        self.login = config['login']
+        self.resume_numbers = config['resume_numbers']
+        self.browser = webdriver.Chrome(options=chrome_options)
+        self.logger = Logger()
+    
+    def click1_with_password(self) -> None:
+        """ Enter with password"""
+        click_on_it = self.browser.find_element(By.CSS_SELECTOR,"button[data-qa ='expand-login-by-password'][class='bloko-link bloko-link_pseudo']")
+        click_on_it.click()
+    
+    def click2_write_login(self) -> None:
+        """ Write login """
+        login_input = self.browser.find_element(By.CSS_SELECTOR,"div.bloko-form-item:nth-child(7) > fieldset:nth-child(1) > input:nth-child(1)")
+        login_input.clear()
+        login_input.send_keys(self.login)
 
+    def click3_write_password(self) -> None:
+        """ Write password """
+        password = self.browser.find_element(By.CSS_SELECTOR,".bloko-input-text-wrapper_icon-right > input:nth-child(1)")
+        password.send_keys(self.password)
+
+    def click4_enter(self) -> None:
+        """ Enter """
+        enter_button = self.browser.find_element(By.CSS_SELECTOR,".account-login-actions > button:nth-child(1) > span:nth-child(1)")
+        enter_button.click()
+    def click5_main_page(self) -> None:
+        """ Enter to main page"""
+        resume_button = self.browser.find_element(By.CSS_SELECTOR,"div.supernova-navi-item_lvl-2:nth-child(2) > a:nth-child(1)")
+        resume_button.click()
+    def click6_up_resume(self) -> None:
+        """ Up resume"""
+        for i in range(self.resume_numbers):
+            try:
+              button_up = self.browser.find_element(By.XPATH,"//button[@data-qa='resume-update-button_actions' and @class='bloko-link']") 
+              button_up.click()
+              sleep(4)
+              self.logger.logger.info(f"SUCCESS, 2 UP RESUME NUMBER {i}")
+            except: self.logger.logger.info(f"ERROR, 2 UP RESUME NUMBER {i}")
+
+
+    def call(self) -> None:
+        """ Main function"""
+        self.logger.logger.info(f"{datetime.now()} Starting up your resume!")
+        self.browser.get("https://spb.hh.ru/account/login?backurl=%2F&hhtmFrom=main")
+        sleep(randint(1,2))
+        self.click1_with_password()
+        sleep(randint(1,2))
+        self.click2_write_login()
+        sleep(randint(1,2))
+        self.click3_write_password()
+        sleep(randint(1,2))
+        self.click4_enter()
+        sleep(randint(1,2))
+        self.click5_main_page()
+        sleep(randint(1,2))
+        self.click6_up_resume()
+        sleep(randint(1,2))
+        self.browser.close()
 
 
 if __name__ == '__main__':
-    #write here your email and password
-    loginhh = "your_login"
-    passwordhh = "your_password"
-    n = 2 #count of resume
-    hh = hh_client()
-    while True:
-        for i in range(14400):
-            if i%100 ==0:
-                print(f"{i}/{14400}")
-            sleep(1)
-            if i == 14400 - 1:
-                try:
-                    hh.login_hh(passwordhh, loginhh,n)
-                    print(f"Up resume")
-                except:
-                    try:
-                        hh.login_hh(passwordhh, loginhh,n)
-                    except: pass
+    with open('./cfg/config.yaml', 'r') as f:
+        config = yaml.safe_load(f)
 
+    hh_client = HH_client(config)
 
+    hh_client()
